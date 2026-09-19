@@ -13,5 +13,12 @@ wheels/
 .planning/*.db
 .planning/*.csv
 .planning/research/*
+
+# data
 data/
+
+# Secrets
 .env
+
+# junk
+.DS_Store
