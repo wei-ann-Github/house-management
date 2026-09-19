@@ -13,3 +13,5 @@ wheels/
 .planning/*.db
 .planning/*.csv
 .planning/research/*
+data/
+.env
