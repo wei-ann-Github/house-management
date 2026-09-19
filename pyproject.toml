@@ -7,7 +7,7 @@ authors = [
     { name = "wei-ann.github", email = "wei-ann.lim@outlook.com" }
 ]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["PyPDF2>=3.0.0"]
 
 [project.scripts]
 house-management = "house_management:main"

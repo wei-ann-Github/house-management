@@ -32,11 +32,21 @@ def init_db():
         category TEXT,
         item_id INTEGER,
         quote_pdf_path TEXT,
+        quote_text TEXT,
         paid INTEGER DEFAULT 0,
         created_at TEXT DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(item_id) REFERENCES items(id)
     )
     ''')
+    # Ensure existing databases get the quote_text column
+    cur.execute("PRAGMA table_info(costs)")
+    cols = [r[1] for r in cur.fetchall()]
+    if 'quote_text' not in cols:
+        try:
+            cur.execute('ALTER TABLE costs ADD COLUMN quote_text TEXT')
+        except Exception:
+            # Older SQLite versions or locked DB may raise; ignore and continue
+            pass
     cur.execute('''
     CREATE TABLE IF NOT EXISTS milestones (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -66,11 +76,11 @@ def insert_item(name, photo_path=None, dimensions=None, category=None, tag=None)
     conn.close()
     return id_
 
-def insert_cost(description, amount, category=None, item_id=None, quote_pdf_path=None, paid=False) -> int:
+def insert_cost(description, amount, category=None, item_id=None, quote_pdf_path=None, quote_text=None, paid=False) -> int:
     conn = get_conn()
     cur = conn.cursor()
-    cur.execute('INSERT INTO costs (description, amount, category, item_id, quote_pdf_path, paid) VALUES (?,?,?,?,?,?)',
-                (description, float(amount), category, item_id, quote_pdf_path, int(bool(paid))))
+    cur.execute('INSERT INTO costs (description, amount, category, item_id, quote_pdf_path, quote_text, paid) VALUES (?,?,?,?,?,?,?)',
+                (description, float(amount), category, item_id, quote_pdf_path, quote_text, int(bool(paid))))
     conn.commit()
     id_ = cur.lastrowid
     conn.close()

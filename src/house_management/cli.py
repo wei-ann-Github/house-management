@@ -7,6 +7,13 @@ import sys
 
 from . import db
 
+# Optional PyPDF2 import for quote extraction
+try:
+    from PyPDF2 import PdfReader
+    PYPDF2_AVAILABLE = True
+except Exception:
+    PYPDF2_AVAILABLE = False
+
 EXPORT_PATH = Path('.planning/inventory_export.csv')
 
 
@@ -15,15 +22,47 @@ def cmd_init_db(args):
     print(f"Initialized DB at {db.DB_PATH}")
 
 
+def extract_pdf_text(path: str) -> str:
+    """Extract text from a PDF file if PyPDF2 is available. Returns None on failure or if not available."""
+    if not PYPDF2_AVAILABLE:
+        return None
+    p = Path(path)
+    if not p.exists():
+        return None
+    try:
+        reader = PdfReader(str(p))
+        texts = []
+        for page in reader.pages:
+            try:
+                texts.append(page.extract_text() or '')
+            except Exception:
+                # Ignore page-level extraction errors
+                texts.append('')
+        full = '\n'.join(texts)
+        # Keep it reasonably sized
+        return full[:2000]
+    except Exception:
+        return None
+
+
 def cmd_add_item(args):
     item_id = db.insert_item(args.name, args.photo, args.dimensions, args.category, args.tag)
     print(f"Added item id={item_id} name={args.name}")
 
 
 def cmd_add_cost(args):
-    if args.quote and not Path(args.quote).exists():
-        print(f"Warning: quote PDF path does not exist: {args.quote}")
-    cost_id = db.insert_cost(args.description, args.amount, args.category, args.item_id, args.quote, args.paid)
+    quote_text = None
+    if args.quote:
+        qpath = Path(args.quote)
+        if not qpath.exists():
+            print(f"Warning: quote PDF path does not exist: {args.quote}")
+        else:
+            quote_text = extract_pdf_text(args.quote)
+            if quote_text is None and not PYPDF2_AVAILABLE:
+                print("Note: PyPDF2 not available; quote text extraction skipped.")
+            elif quote_text is None:
+                print("Warning: failed to extract text from quote PDF.")
+    cost_id = db.insert_cost(args.description, args.amount, args.category, args.item_id, args.quote, quote_text, args.paid)
     print(f"Added cost id={cost_id} amount={args.amount}")
 
 
@@ -48,7 +87,9 @@ def cmd_list(args):
             print(f"{r['id']}: {r['name']} ({r['category']}) tag={r['tag']}")
     elif args.what == 'costs':
         for r in db.list_costs():
-            print(f"{r['id']}: {r['description']} ${r['amount']} item={r['item_id']} quote={r['quote_pdf_path']} paid={r['paid']}")
+            qtext = r['quote_text'] if 'quote_text' in r.keys() and r['quote_text'] else None
+            qshort = (qtext[:80] + '...') if qtext and len(qtext) > 80 else qtext
+            print(f"{r['id']}: {r['description']} ${r['amount']} item={r['item_id']} quote={r['quote_pdf_path']} paid={r['paid']} quote_text={qshort}")
     elif args.what == 'milestones':
         for r in db.list_milestones():
             print(f"{r['id']}: {r['title']} due={r['due_date']} complete={r['complete']}")
