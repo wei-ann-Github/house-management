@@ -1,0 +1,11 @@
+{
+  "project_name": "new-house-management",
+  "primary_language": "Python",
+  "include_research": true,
+  "created_at": "2026-09-19",
+  "deadline": "2026-12-08",
+  "workflow": {
+    "default_phase_duration_weeks": 2,
+    "auto_mode": false
+  }
+}
