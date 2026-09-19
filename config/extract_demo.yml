@@ -1,3 +1,0 @@
-# Demo config for extract_demo.py
-# Provide the path to a local PDF file under 'filename'
-filename: "/tmp/quote-sofa.pdf"

@@ -6,15 +6,19 @@ dist/
 wheels/
 *.egg-info
 
-# Virtual environments
+# Virtual environments and locks
 .venv
+uv.lock
+*.lock
 
 # Local planner outputs
 .planning/*.db
 .planning/*.csv
 .planning/research/*
 
-# data
+# data and config
+config/
+!config/*.yml.example
 data/
 
 # Secrets

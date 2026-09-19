@@ -7,7 +7,11 @@ authors = [
     { name = "wei-ann.github", email = "wei-ann.lim@outlook.com" }
 ]
 requires-python = ">=3.11"
-dependencies = ["PyPDF2>=3.0.0"]
+dependencies = [
+    "pdfplumber>=0.11.10",
+    "PyPDF2>=3.0.0",
+    "pyyaml>=6.0.3",
+]
 
 [project.scripts]
 house-management = "house_management:main"

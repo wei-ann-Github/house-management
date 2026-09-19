@@ -1,11 +1,10 @@
 # house-management
 
-<!-- TODO: Test PDF extraction demo
-1. Update config/extract_demo.yml `filename` to point to a local PDF quote file.
-2. Run the demo:
-   - With system Python: `PYTHONPATH=src python script/extract_demo.py`
-   - Or with uv-managed runtime: `uv run script/extract_demo.py`
-3. Inspect output at `.planning/research/extract_demo_output.txt` and verify the preview printed to stdout.
--->
-
 A small tool to manage moving-related inventory, budgets, vendors, and timelines. See .planning/ for project plans and requirements.
+
+## TODO
+
+- [ ] Evaluate scalable PDF table extraction options:
+  - **[Docling](https://docling-project.github.io/docling/usage/advanced_options/):** automatic layout and table-structure recognition without per-file coordinates.
+  - **[pdfplumber](https://github.com/jsvine/pdfplumber#table-extraction-settings):** automatic alignment-based table detection, with heuristics to group wrapped descriptions into logical rows.
+- [ ] Benchmark both options on the your quotation PDFs before choosing or replacing the current extractor. Check row/cell accuracy, wrapped descriptions, optional items (`10b`, `12b`), separately priced subrows, unnumbered labour charges, blank totals, and `Bundle` prices. Compare runtime and setup requirements, and preserve quantity/price associations in both structured and readable output.

@@ -1,0 +1,15 @@
+# Demo config for extract_demo.py
+# Provide the path to a local PDF file under 'filename'
+filenames:
+  - "./path/to/pdf1.pdf"
+  - "./path/to/pdf2.pdf"
+
+# Optional layout-specific table regions, keyed by filename and 1-based page.
+# Coordinates in PDF points from the top-left; bbox excludes headers/footer.
+# Each integer in the first column starts a row, including its wrapped text.
+table_regions:
+  "pdf1.pdf":
+    1:
+      bbox: [20, 290, 575, 655]
+      # Item, model, picture (empty in text), description, qty, price, amount.
+      columns: [20, 65, 180, 237, 395, 440, 490, 575]
